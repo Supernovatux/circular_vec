@@ -1,0 +1,8 @@
+[package]
+name = "circular_vec"
+version = "0.1.0"
+edition = "2018"
+authors = ["Daniel Porteous <danielporteous1@gmail.com>"]
+description = "A fixed length vector that provides a next function that loops infinitely"
+repository = "https://github.com/banool/circular_vec"
+license = "MIT"
