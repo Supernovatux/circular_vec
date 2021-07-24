@@ -1,14 +1,40 @@
+//! This struct maintains a fixed length circular Vec.
+//! You provide the items for the circular Vec at initialization
+//! time and can then never change the amount of items held within.
+//! It provides a `next` function that, when it hits the end of the struct,
+//! just loops back to the start.
+//!
+//! The CircularVec allows for in place changes to the items held
+//! within using the `next_mut` function, though for most cases
+//! just using `next` is fine. To call either of these functions
+//! you must have a mutable reference to the CircularVec so that
+//! it can increment its internal counter.
+//!
+//! Notably, CircularVec does not implement `IntoIterator` because it
+//! would produce an iterator that never ends, which is not the
+//! intended use of `IntoIterator`. Accordingly, the `next` function
+//! here does not return the item (`T`), but a reference to it (`&T`), and
+//! returns `&T` instead of `Option<&T>` because there will always
+//! be an item it can return.
+//!
+//! Example usage:
+//!
+//!     let mut cv: CircularVec<String> = ["hello".to_string(), "world".to_string()]
+//!         .to_vec()
+//!         .into_iter()
+//!         .collect();
+//!             
+//!     assert_eq!(cv.next(), "hello");
+//!     assert_eq!(cv.next(), "world");
+//!     assert_eq!(cv.next(), "hello");
+//!     assert_eq!(cv.next(), "world");
+
 use std::iter::FromIterator;
 use std::ops::{Index, IndexMut};
 use std::slice::SliceIndex;
 
-/// This struct maintains a fixed length circular Vec.
-/// You provide the items for the circular Vec at initialization
-/// time and can then never change the items held within.
-///
-/// It provides a method to get the next item without removing it from the Vec.
-/// When we hit the end of the Vec, it just loops back to the start.
-struct CircularVec<T> {
+/// See crate level documentation.
+pub struct CircularVec<T> {
     items: Vec<T>,
     index: usize,
 }
@@ -18,12 +44,14 @@ impl<T> CircularVec<T> {
         CircularVec { items, index: 0 }
     }
 
+    /// Get an immutable reference to the next item in the CircularVec.
     pub fn next(&mut self) -> &T {
         let original_index = self.index;
         self.increment_index();
         &self.items[original_index]
     }
 
+    /// Get a mutable reference to the next item in the CircularVec.
     pub fn next_mut(&mut self) -> &mut T {
         let original_index = self.index;
         self.increment_index();
