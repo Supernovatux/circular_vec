@@ -51,6 +51,13 @@ impl<T> CircularVec<T> {
         &self.items[original_index]
     }
 
+    pub fn skip(&mut self, n: usize) {
+        let mut n = n;
+        while n > 0 {
+            self.increment_index();
+            n -= 1;
+        }
+    }
     /// Get a mutable reference to the next item in the CircularVec.
     pub fn next_mut(&mut self) -> &mut T {
         let original_index = self.index;
